@@ -158,7 +158,7 @@ When you troubleshoot 8606 errors, think about the following points:
 
 ### How to remove lingering objects
 
-While many methods exist to remove lingering objects, there are three primary tools commonly used: *repadmin.exe*, Lingering Object Liquidator (LoL) and repldiag.  
+While many methods exist to remove lingering objects, there are three primary tools commonly used: *repadmin.exe*, Lingering Object Liquidator (LoL).  
 
 #### Lingering Object Liquidator (LoL)  
 
@@ -198,17 +198,6 @@ DSA is the name of a domain controller that hosts a read-only domain directory p
 \<Good Source DSA Address> is the name of a domain controller that hosts a writable copy of \<Naming Context>. The domain controller must be network-available to the DSA computer.
 
 If the lingering object that is reported in the 1988 event is not removed by repadmin, evaluate whether the object on the source domain controller was created in USN gap, or whether the objects originating domain controller does not exist in the source domain controller's up-to-dateness vector.
-
-#### Repldiag
-
-> [!NOTE]
-> Lingering objects can also be removed by using *repldiag.exe*. This tool automates the `repadmin /removelingeringobjects` process. Removing lingering objects from a forest with repldiag is as simple as running `repldiag /removelingeringobjects`.  However, it is usually best to exercise some control over the process in larger environments.  The option `/OverRideReferenceDC` allows you to select which DC is used for cleanup.  The option `/outputrepadmincommandlinesyntax` allows you to see what a forest-wide cleanup looks like using repadmin.
-
-Launch the following TechNet on-demand lab for guided troubleshooting practice of this and other AD replication errors:
-
-In the lab, you use both repadmin and *repldiag.exe* to remove lingering objects  
-Troubleshooting Active Directory Replication Errors  
-In this lab, you'll walk through the troubleshooting, analysis and implementation phases of commonly encountered Active Directory replication errors. You'll use a combination of ADREPLSTATUS, *repadmin.exe*, and other tools to troubleshoot a five DC, three-domain environment.  AD replication errors encountered in the lab include -2146893022, 1256, 1908, 8453 and 8606."
 
 ### Monitoring Active Directory replication health daily
 
