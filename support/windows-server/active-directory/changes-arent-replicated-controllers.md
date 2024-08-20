@@ -1,6 +1,6 @@
 ---
 title: Changes aren't replicated to destination domain controllers
-description: Describes an issue that occurs in a Windows Server 2003 environment, where changes that are made to security groups or distribution groups aren‘t replicated to destination domain controllers when you use link value replication. Resolution is provided.
+description: Describes an issue that occurs in a Windows Server environment, where changes that are made to security groups or distribution groups aren‘t replicated to destination domain controllers when you use link value replication. Resolution is provided.
 ms.date: 12/26/2023
 manager: dcscontentpm
 audience: itpro
@@ -17,19 +17,19 @@ _Original KB number:_ &nbsp; 958838
 
 ## Symptoms
 
-Consider the following scenario. In a Windows Server 2003 environment, you set the forest functional level in the forest to Windows Server 2003 or to a later version of Windows. You do this to apply link value replication (LVR) changes to group membership on LVR-enabled attributes. In this scenario, you may experience the following symptoms:
+Consider the following scenario. In a Windows Server environment, you set the forest functional level in the forest to Windows Server 2012 or to a later version of Windows. You do this to apply link value replication (LVR) changes to group membership on LVR-enabled attributes. In this scenario, you may experience the following symptoms:
 
 - Changes to the security group or distribution group that exists on the source domain controller aren't replicated to the destination domain controllers. You experience this symptom when the group membership change is initiated either by an administrator or by a program.
 
-- When you run the `repadmin /showreps` command, you receive a message that states that a Windows Server 2008-based or Windows Server 2003-based destination domain controller can't replicate inbound changes to a directory partition from one or more source domain controllers. In this situation, you also receive a Win32 error 8451.
+- When you run the `repadmin /showreps` command, you receive a message that states that a Windows Server destination domain controller can't replicate inbound changes to a directory partition from one or more source domain controllers. In this situation, you also receive a Win32 error 8451.
 
     > [!NOTE]
     > Win32 error 8451 corresponds to the ERROR_DS_DRA_DB_ERROR error and to the following description:  
     The replication operation encountered a database error.
 
-    The affected Windows Server 2008-based or Windows Server 2003-based destination domain controller may not replicate inbound changes that are made to read-only partitions from global catalogs or from domain controllers that are hosting writable directory partitions.
+    The affected Windows Server destination domain controller may not replicate inbound changes that are made to read-only partitions from global catalogs or from domain controllers that are hosting writable directory partitions.
 
-- Windows Server 2008-based and Windows Server 2003-based destination domain controllers log events in the Directory Service log.
+- Windows Server destination domain controllers log events in the Directory Service log.
 
     > [!NOTE]
     >
@@ -38,7 +38,7 @@ Consider the following scenario. In a Windows Server 2003 environment, you set t
     > - Exception e0010004 corresponds to error DSA_DB_EXCEPTION.
     > - Internal ID 2050344 corresponds to a function in the database layer code of NTDS. This number depends on the operating system, on the service pack, and on the patching revisions.
 
-- Windows Server 2008-based and Windows Server 2003-based destination domain controllers log the Directory Service event 1692.
+- Windows Server destination domain controllers log the Directory Service event 1692.
 
     > [!NOTE]
     > This event is logged when you enable diagnostic logging and set the value for the **5 Replication Events** registry entry to 1 or greater.
@@ -49,7 +49,7 @@ These symptoms may occur when changes are made to any LVR-replicated object clas
 
 ## Cause
 
-This issue occurs if Windows Server 2008-based or Windows Server 2003-based destination domain controllers stop inbound replication when they receive LVR updates of objects that don't exist in their local copies of Active Directory.
+This issue occurs if Windows Server destination domain controllers stop inbound replication when they receive LVR updates of objects that don't exist in their local copies of Active Directory.
 
 Specifically, this issue may occur if the following conditions are true:
 
@@ -57,7 +57,7 @@ Specifically, this issue may occur if the following conditions are true:
 
 - The forest functional level is set to Windows Server 2003 Interim mode or a later version.
 
-- The lingering security or distribution groups reside on either read-only or writable partitions of Windows Server 2003-based or Windows Server 2008-based source domain controllers, and replication stops between the source and destination domain controllers.
+- The lingering security or distribution groups reside on either read-only or writable partitions of Windows Server source domain controllers, and replication stops between the source and destination domain controllers.
 
 ## Resolution
 
@@ -87,10 +87,13 @@ To resolve this issue, follow these steps:
 
 4. On the destination domain controllers, verify that Directory Service event 1692 is logged in the Directory Service log. The event displays changes to the **member** attribute of the security group or to other LVR-replicated attributes and to the lingering object GUIDs.
 
-5. Remove the lingering objects from the Windows Server 2008-based or Windows Server 2003-based destination domain controllers by using the `repadmin /removelingeringobjects` command.
+5. Remove the lingering objects from the Windows Server destination domain controllers by using the `repadmin /removelingeringobjects` command.
+   Note: By default `repadmin /removelingeringobjects` command will act in audit mode. To remove objects use `remove` switch.
+
+6. As well you can use Microsoft tool [Lingering Object Liquidator(_LOLv2_)]((https://techcommunity.microsoft.com/t5/ask-the-directory-services-team/introducing-lingering-object-liquidator-v2/ba-p/400475))..
 
 > [!IMPORTANT]
-> Disabling strict replication consistency functionality in the registry of Windows Server 2008-based or Windows Server 2003-based destination domain controllers does not resume replication. You must not set the value of the Strict Replication Consistency registry entry to 0 to unblock replication of directory partitions.
+> Disabling strict replication consistency functionality in the registry of Windows Server destination domain controllers does not resume replication. You must not set the value of the Strict Replication Consistency registry entry to 0 to unblock replication of directory partitions.
 >
 > Do not force replication of directory partitions on source domain controllers by using the repadmin /sync command or an equivalent command together with the /force switch.
 
